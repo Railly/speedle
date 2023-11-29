@@ -1,4 +1,12 @@
-import { Course, FlattenTask, Tasks } from "./utils";
+import {
+  Course,
+  Event,
+  FlattenTask,
+  Tasks,
+  getCourseTitle,
+  getTimeLeftPercentage,
+  translatedEventTypes,
+} from "./utils";
 import { DataTable } from "./data-table";
 import { cookies } from "next/headers";
 import {
@@ -10,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 export const entries = <O extends object>(obj: O) =>
   Object.entries(obj) as { [K in keyof O]: [K, O[K]] }[keyof O][];
@@ -34,6 +43,10 @@ export default async function Dashboard() {
   const currentCourse = courses[0];
   const tasks: Tasks = await fetch(
     `http://localhost:3000/api/tasks?id=${currentCourse.id}&cookie=${cookie?.value}`
+  ).then((res) => res.json());
+
+  const events: Event[] = await fetch(
+    `http://localhost:3000/api/calendar?cookie=${cookie?.value}`
   ).then((res) => res.json());
 
   const flattenedTasks = flattenTasks(tasks);
@@ -89,6 +102,64 @@ export default async function Dashboard() {
           ))}
         </div>
         <DataTable data={flattenedTasks} />
+        <div className="flex flex-col gap-4">
+          {events.map((event) => (
+            <Card key={event.courseId} className="w-full">
+              <CardHeader className="border border-b border-border">
+                <CardTitle>{event.courseName}</CardTitle>
+                {getCourseTitle(event.courseTitle) !== event.courseName && (
+                  <CardDescription>
+                    <code className="text-xs">
+                      {getCourseTitle(event.courseTitle)}
+                    </code>
+                  </CardDescription>
+                )}
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <Badge
+                    variant={
+                      event.eventType === "class"
+                        ? "amber"
+                        : event.eventType === "exam"
+                        ? "destructive"
+                        : "secondary"
+                    }
+                    className="mb-2"
+                  >
+                    {translatedEventTypes[event.eventType]}
+                  </Badge>
+                  <div className="flex gap-2">
+                    <p className="font-mono text-sm text-gray-500">
+                      {event.date}:
+                    </p>
+                    <p className="font-mono text-sm text-gray-500">
+                      {event.startTime}
+                      {event.endTime && <> - {event.endTime}</>}
+                    </p>
+                  </div>
+                </div>
+                <Progress
+                  value={getTimeLeftPercentage(
+                    event.date,
+                    event.startTime,
+                    event.endTime
+                  )}
+                />
+              </CardContent>
+              <CardFooter>
+                <a
+                  href={event.eventUrl || "#"}
+                  className="text-sm font-medium text-sky-600 hover:underline"
+                >
+                  {event.eventType === "class"
+                    ? "Unirse a la clase"
+                    : "Ver en Moodle"}
+                </a>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

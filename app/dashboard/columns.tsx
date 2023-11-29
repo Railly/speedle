@@ -54,7 +54,7 @@ export const columns: ColumnDef<FlattenTask>[] = [
       return (
         <a
           href={info.getValue() as string}
-          className="text-sky-600 hover:underline"
+          className="font-medium text-sky-600 hover:underline"
         >
           Link
         </a>
