@@ -2,6 +2,8 @@ import { Event } from "@/app/interfaces";
 import { JSDOM } from "jsdom";
 import { NextRequest } from "next/server";
 
+export const maxDuration = 300;
+
 export async function GET(req: NextRequest) {
   const cookie = req.nextUrl.searchParams.get("cookie");
   const res = await fetch(

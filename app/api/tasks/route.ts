@@ -2,6 +2,8 @@ import { calculateTimeLeft } from "@/lib/utils";
 import { JSDOM } from "jsdom";
 import { NextRequest } from "next/server";
 
+export const maxDuration = 300;
+
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
   const cookie = req.nextUrl.searchParams.get("cookie");
