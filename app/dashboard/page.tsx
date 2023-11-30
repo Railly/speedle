@@ -52,7 +52,7 @@ export default async function Dashboard() {
   const flattenedTasks = flattenTasks(tasks);
 
   if (!currentCourse) {
-    redirect("/");
+    // redirect("/");
   }
 
   return (

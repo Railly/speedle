@@ -57,7 +57,7 @@ export default async function Dashboard({
   const flattenedTasks = flattenTasks(tasks);
 
   if (courses.length === 0) {
-    redirect("/");
+    // redirect("/");
   }
 
   return (
@@ -69,7 +69,7 @@ export default async function Dashboard({
             Speedle
           </h2>
           <div className="flex gap-4 ">
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <CourseCard
                 key={course.id}
                 course={course}
@@ -83,7 +83,7 @@ export default async function Dashboard({
               Tareas de{" "}
               <span className="underline">
                 {getCourseTitle(
-                  courses.find((course) => String(course.id) === params.id)
+                  courses?.find((course) => String(course.id) === params.id)
                     ?.fullName
                 )}
               </span>
