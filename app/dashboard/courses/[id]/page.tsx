@@ -19,6 +19,7 @@ import {
   translatedEventTypes,
 } from "@/lib/utils";
 import { AngleIcon, CalendarIcon, GridIcon } from "@radix-ui/react-icons";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard({
   params,
@@ -32,16 +33,32 @@ export default async function Dashboard({
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
     `http://localhost:3000/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+      return [];
+    });
   const tasks: Tasks = await fetch(
-    `http://localhost:3000/api/tasks?id=${params.id}&cookie=${cookie?.value}`
-  ).then((res) => res.json());
+    `http://localhost:3000/api/tasks?id=${params?.id}&cookie=${cookie?.value}`
+  )
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+      return [];
+    });
 
   const events: Event[] = await fetch(
     `http://localhost:3000/api/calendar?cookie=${cookie?.value}`
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .catch(() => []);
 
   const flattenedTasks = flattenTasks(tasks);
+
+  if (courses.length === 0) {
+    redirect("/");
+  }
 
   return (
     <div className="container p-4 mx-auto">

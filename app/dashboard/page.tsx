@@ -19,6 +19,7 @@ import {
   translatedEventTypes,
 } from "@/lib/utils";
 import { CalendarIcon } from "@radix-ui/react-icons";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
   const cookieStore = cookies();
@@ -26,17 +27,33 @@ export default async function Dashboard() {
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
     `http://localhost:3000/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+      return [];
+    });
   const currentCourse = courses[0];
   const tasks: Tasks = await fetch(
-    `http://localhost:3000/api/tasks?id=${currentCourse.id}&cookie=${cookie?.value}`
-  ).then((res) => res.json());
+    `http://localhost:3000/api/tasks?id=${currentCourse?.id}&cookie=${cookie?.value}`
+  )
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+      return [];
+    });
 
   const events: Event[] = await fetch(
     `http://localhost:3000/api/calendar?cookie=${cookie?.value}`
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .catch(() => []);
 
   const flattenedTasks = flattenTasks(tasks);
+
+  if (!currentCourse) {
+    redirect("/");
+  }
 
   return (
     <div className="container p-4 mx-auto">
@@ -44,17 +61,17 @@ export default async function Dashboard() {
         <div className="sticky flex flex-col self-start gap-4 top-4">
           <h2 className="text-2xl font-bold">Speedle</h2>
           <div className="flex gap-4 ">
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <CourseCard
                 key={course.id}
                 course={course}
-                isSelected={course.id === currentCourse.id}
+                isSelected={course.id === currentCourse?.id}
               />
             ))}
           </div>
           <div className="w-full mt-4">
             <h3 className="mb-4 text-xl font-bold">
-              Tareas de {getCourseTitle(currentCourse.fullName)}
+              Tareas de {getCourseTitle(currentCourse?.fullName)}
             </h3>
             <DataTable data={flattenedTasks} />
           </div>
@@ -64,7 +81,7 @@ export default async function Dashboard() {
             <CalendarIcon width={20} height={20} />
             Próximos eventos
           </h3>
-          {events.map((event) => (
+          {events?.map((event) => (
             <Card key={event.courseId} className="w-full">
               <CardHeader className="border-b border-border">
                 <CardTitle>{event.courseName}</CardTitle>

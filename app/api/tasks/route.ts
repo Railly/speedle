@@ -1,10 +1,17 @@
 import { calculateTimeLeft } from "@/lib/utils";
 import { JSDOM } from "jsdom";
+import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
   const cookie = req.nextUrl.searchParams.get("cookie");
+  if (!id) {
+    return new Response(JSON.stringify({ message: "id is required" }), {
+      status: 400,
+      statusText: "Bad Request",
+    });
+  }
   const res = await fetch(
     `https://campusvirtual.mexico.unir.net/course/view.php?id=${id}`,
     {
@@ -16,6 +23,13 @@ export async function GET(req: NextRequest) {
     }
   );
   const data = await res.text();
+
+  if (data.includes("alert-danger")) {
+    return new Response(JSON.stringify([]), {
+      status: 400,
+      statusText: "Bad Request",
+    });
+  }
   const dom = new JSDOM(data);
 
   const assignmentContainers = dom.window.document.querySelectorAll(".assign");

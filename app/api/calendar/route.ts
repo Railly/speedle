@@ -1,7 +1,6 @@
-// https://campusvirtual.mexico.unir.net/calendar/view.php?view=upcoming
-
 import { Event } from "@/app/interfaces";
 import { JSDOM } from "jsdom";
+import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -17,6 +16,13 @@ export async function GET(req: NextRequest) {
     }
   );
   const data = await res.text();
+
+  if (data.includes("alert-danger")) {
+    return new Response(JSON.stringify([]), {
+      status: 400,
+      statusText: "Bad Request",
+    });
+  }
   const dom = new JSDOM(data);
   const document = dom.window.document;
 

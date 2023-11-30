@@ -1,7 +1,7 @@
 import { Course, CoursesResponse } from "@/app/interfaces";
-import { NextRequest, NextResponse } from "next/server";
+import { redirect } from "next/navigation";
+import { NextRequest } from "next/server";
 
-// https://campusvirtual.mexico.unir.net/lib/ajax/service.php?sesskey=fVZq4uzo93&info=core_course_get_enrolled_courses_by_timeline_classification
 export async function GET(req: NextRequest) {
   const sesskey = req.nextUrl.searchParams.get("sesskey");
   const cookie = req.nextUrl.searchParams.get("cookie");
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!cookie) {
-    return Response.redirect("http://localhost:3000", 302);
+    return redirect("http://localhost:3000");
   }
 
   try {
@@ -46,6 +46,13 @@ export async function GET(req: NextRequest) {
     );
     if (response.status === 200) {
       const data: CoursesResponse = await response.json();
+
+      if (data[0].error) {
+        return new Response(JSON.stringify([]), {
+          status: 500,
+          statusText: "Internal Server Error",
+        });
+      }
 
       return new Response(
         JSON.stringify(
