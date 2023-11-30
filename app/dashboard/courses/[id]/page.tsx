@@ -1,4 +1,4 @@
-import { DataTable } from "./data-table";
+import { DataTable } from "../../data-table";
 import { cookies } from "next/headers";
 import {
   Card,
@@ -11,25 +11,30 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import CourseCard from "@/components/course-card";
-import { Course, Event, Tasks } from "../interfaces";
+import { Course, Event, Tasks } from "../../../interfaces";
 import {
   flattenTasks,
   getCourseTitle,
   getTimeLeftPercentage,
   translatedEventTypes,
 } from "@/lib/utils";
-import { CalendarIcon } from "@radix-ui/react-icons";
+import { AngleIcon, CalendarIcon, GridIcon } from "@radix-ui/react-icons";
 
-export default async function Dashboard() {
+export default async function Dashboard({
+  params,
+}: {
+  params: {
+    id: string;
+  };
+}) {
   const cookieStore = cookies();
   const sesskey = cookieStore.get("sesskey");
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
     `http://localhost:3000/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
   ).then((res) => res.json());
-  const currentCourse = courses[0];
   const tasks: Tasks = await fetch(
-    `http://localhost:3000/api/tasks?id=${currentCourse.id}&cookie=${cookie?.value}`
+    `http://localhost:3000/api/tasks?id=${params.id}&cookie=${cookie?.value}`
   ).then((res) => res.json());
 
   const events: Event[] = await fetch(
@@ -42,19 +47,29 @@ export default async function Dashboard() {
     <div className="container p-4 mx-auto">
       <div className="flex gap-8">
         <div className="sticky flex flex-col self-start gap-4 top-4">
-          <h2 className="text-2xl font-bold">Speedle</h2>
+          <h2 className="text-2xl font-bold inline-flex gap-1.5 items-center">
+            <AngleIcon height={24} width={24} />
+            Speedle
+          </h2>
           <div className="flex gap-4 ">
             {courses.map((course) => (
               <CourseCard
                 key={course.id}
                 course={course}
-                isSelected={course.id === currentCourse.id}
+                isSelected={String(course.id) === params.id}
               />
             ))}
           </div>
           <div className="w-full mt-4">
-            <h3 className="mb-4 text-xl font-bold">
-              Tareas de {getCourseTitle(currentCourse.fullName)}
+            <h3 className="mb-4 text-xl font-bold inline-flex items-center gap-1.5">
+              <GridIcon height={20} width={20} />
+              Tareas de{" "}
+              <span className="underline">
+                {getCourseTitle(
+                  courses.find((course) => String(course.id) === params.id)
+                    ?.fullName
+                )}
+              </span>
             </h3>
             <DataTable data={flattenedTasks} />
           </div>

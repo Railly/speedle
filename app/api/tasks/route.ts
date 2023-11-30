@@ -1,3 +1,4 @@
+import { calculateTimeLeft } from "@/lib/utils";
 import { JSDOM } from "jsdom";
 import { NextRequest } from "next/server";
 
@@ -23,10 +24,26 @@ export async function GET(req: NextRequest) {
     Array.from(quizContainers)
   );
 
+  const promises: { call: Promise<Response>; link: string; name: string }[] =
+    [];
+
   const tasks = Array.from(tasksContainer)
     .map((container) => {
       const name = container.querySelector("span")?.textContent?.trim();
       const link = container.querySelector("a")?.href;
+      if (link && name) {
+        promises.push({
+          call: fetch(link, {
+            method: "GET",
+            headers: {
+              "Content-Type": "text/html; charset=utf-8",
+              cookie: cookie || "",
+            },
+          }),
+          link,
+          name,
+        });
+      }
       const completionImage = container.querySelector("img.icon");
       const altAttribute =
         completionImage && completionImage.attributes.getNamedItem("alt");
@@ -39,9 +56,99 @@ export async function GET(req: NextRequest) {
     })
     .filter((task) => task.name && task.link);
 
+  const responses = await Promise.all(
+    promises.map((promise) => {
+      return promise.call.then((response) => {
+        if (promise.link.includes("quiz")) {
+          return response.text().then((data) => {
+            const dom = new JSDOM(data);
+            const closeDateParagraph = Array.from(
+              dom.window.document.querySelectorAll("p")
+            ).find((p) => p.textContent?.includes("Este examen se cerrará en"));
+            const deliveryDate = closeDateParagraph?.textContent
+              ?.replace("Este examen se cerrará en", "")
+              .trim();
+
+            const timeLeft = deliveryDate
+              ? calculateTimeLeft(deliveryDate)
+              : "";
+
+            return {
+              ...promise,
+              deliveryDate,
+              timeLeft,
+            };
+          });
+        }
+        if (promise.link.includes("assign")) {
+          return response.text().then((data) => {
+            const dom = new JSDOM(data);
+
+            const deliveryDateRow = Array.from(
+              dom.window.document.querySelectorAll("th")
+            ).find((th) => th.textContent?.includes("Fecha de entrega"));
+            const deliveryDate =
+              deliveryDateRow?.nextElementSibling?.textContent?.trim();
+
+            const timeLeftRow = Array.from(
+              dom.window.document.querySelectorAll("th")
+            ).find((th) => th.textContent?.includes("Tiempo restante"));
+            const timeLeft =
+              timeLeftRow?.nextElementSibling?.textContent?.trim();
+
+            return {
+              ...promise,
+              deliveryDate,
+              timeLeft,
+            };
+          });
+        }
+      });
+    })
+  ).then((responses) => responses);
+
+  const laboratories = tasks.filter((task) =>
+    task.name?.includes("Laboratorio")
+  );
+  const microtests = tasks.filter((task) => task.name?.includes("Microtest"));
+  const activities = tasks.filter((task) => task.name?.includes("Actividad"));
+
+  const laboratoriesWithResponses = laboratories.map((laboratory) => {
+    const response = responses.find((response) =>
+      response?.name?.includes(laboratory.name || "")
+    );
+    return {
+      ...laboratory,
+      deliveryDate: response?.deliveryDate,
+      timeLeft: response?.timeLeft,
+    };
+  });
+
+  const microtestsWithResponses = microtests.map((microtest) => {
+    const response = responses.find((response) =>
+      response?.name?.includes(microtest.name || "")
+    );
+    return {
+      ...microtest,
+      deliveryDate: response?.deliveryDate,
+      timeLeft: response?.timeLeft,
+    };
+  });
+
+  const activitiesWithResponses = activities.map((activity) => {
+    const response = responses.find((response) =>
+      response?.name?.includes(activity.name || "")
+    );
+    return {
+      ...activity,
+      deliveryDate: response?.deliveryDate,
+      timeLeft: response?.timeLeft,
+    };
+  });
+
   return Response.json({
-    laboratories: tasks.filter((task) => task.name?.includes("Laboratorio")),
-    microtests: tasks.filter((task) => task.name?.includes("Microtest")),
-    activities: tasks.filter((task) => task.name?.includes("Actividad")),
+    laboratories: laboratoriesWithResponses,
+    microtests: microtestsWithResponses,
+    activities: activitiesWithResponses,
   });
 }

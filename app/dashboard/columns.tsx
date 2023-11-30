@@ -1,6 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Category, FlattenTask, translatedCategories } from "./utils";
+import { Category, FlattenTask } from "../interfaces";
 import { Badge } from "@/components/ui/badge";
+import { translatedCategories } from "@/lib/utils";
+import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 
 export const columns: ColumnDef<FlattenTask>[] = [
   {
@@ -48,15 +50,34 @@ export const columns: ColumnDef<FlattenTask>[] = [
     },
   },
   {
+    accessorKey: "deliveryDate",
+    header: "Fecha de entrega",
+    cell: (info) => {
+      const value = info.getValue() as string;
+      const splitValue = value.split(", ");
+      return (
+        <div className="w-[13rem]">{splitValue[1] + ", " + splitValue[2]}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "timeLeft",
+    header: "Tiempo restante",
+    cell: (info) => {
+      return <div className="w-[8rem]">{info.getValue() as string}</div>;
+    },
+  },
+  {
     accessorKey: "link",
     header: "Link",
     cell: (info) => {
       return (
         <a
           href={info.getValue() as string}
-          className="font-medium text-sky-600 hover:underline"
+          className="inline-flex items-center gap-1 font-medium text-sky-600 hover:underline"
         >
           Link
+          <OpenInNewWindowIcon />
         </a>
       );
     },

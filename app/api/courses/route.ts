@@ -1,4 +1,4 @@
-import { Course, CoursesResponse } from "@/app/dashboard/utils";
+import { Course, CoursesResponse } from "@/app/interfaces";
 import { NextRequest, NextResponse } from "next/server";
 
 // https://campusvirtual.mexico.unir.net/lib/ajax/service.php?sesskey=fVZq4uzo93&info=core_course_get_enrolled_courses_by_timeline_classification

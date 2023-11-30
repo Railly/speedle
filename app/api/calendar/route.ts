@@ -1,6 +1,6 @@
 // https://campusvirtual.mexico.unir.net/calendar/view.php?view=upcoming
 
-import { Event } from "@/app/dashboard/utils";
+import { Event } from "@/app/interfaces";
 import { JSDOM } from "jsdom";
 import { NextRequest } from "next/server";
 

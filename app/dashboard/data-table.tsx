@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { columns } from "./columns";
-import { FlattenTask } from "./utils";
+import { FlattenTask } from "../interfaces";
 
 interface DataTableProps {
   data: FlattenTask[];
@@ -29,7 +29,7 @@ export function DataTable({ data }: DataTableProps) {
   });
 
   return (
-    <div className="border rounded-md">
+    <div className="sticky top-0 border rounded-md">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
