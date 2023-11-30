@@ -26,7 +26,7 @@ export default async function Dashboard() {
   const sesskey = cookieStore.get("sesskey");
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
-    `http://localhost:3000/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
+    `https://spee-dle.vercel.app/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -35,7 +35,7 @@ export default async function Dashboard() {
     });
   const currentCourse = courses[0];
   const tasks: Tasks = await fetch(
-    `http://localhost:3000/api/tasks?id=${currentCourse?.id}&cookie=${cookie?.value}`
+    `https://spee-dle.vercel.app/api/tasks?id=${currentCourse?.id}&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -44,7 +44,7 @@ export default async function Dashboard() {
     });
 
   const events: Event[] = await fetch(
-    `http://localhost:3000/api/calendar?cookie=${cookie?.value}`
+    `https://spee-dle.vercel.app/api/calendar?cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch(() => []);
@@ -52,7 +52,7 @@ export default async function Dashboard() {
   const flattenedTasks = flattenTasks(tasks);
 
   if (!currentCourse) {
-    // redirect("/");
+    redirect("/");
   }
 
   return (
