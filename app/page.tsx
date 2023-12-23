@@ -42,6 +42,8 @@ export default function Home() {
             <a
               className="text-xs text-blue-500 hover:underline"
               href="https://moodle.org/mod/forum/discuss.php?d=417645"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               ¿Cómo obtener mi <code>{"`sesskey`"}</code> y{" "}
               <code>{"`cookie`"}</code>?

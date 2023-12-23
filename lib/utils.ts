@@ -6,59 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getTimeLeftPercentage = (
-  date: "Hoy" | "Mañana" | string,
-  startTime?: string,
-  endTime?: string
-): number => {
-  if (!startTime) {
-    console.error("No start time provided");
-    return 0;
-  }
-  const now = new Date();
-  let eventStartDate = new Date();
-  let eventEndDate = new Date();
-
-  if (date === "Hoy") {
-  } else if (date === "Mañana") {
-    eventStartDate.setDate(now.getDate() + 1);
-    eventEndDate.setDate(now.getDate() + 1);
-  } else {
-    const [dayOfWeek, dayMonth] = date.split(", ");
-    const [day, monthName] = dayMonth.split(" ");
-
-    const month = getMonthNumber(monthName.toLowerCase());
-    if (month === -1) {
-      console.error("Invalid month name");
-      return 0;
-    }
-
-    const year = now.getFullYear();
-    eventStartDate = new Date(year, month, parseInt(day));
-    eventEndDate = new Date(year, month, parseInt(day));
-  }
-
-  const [startHours, startMinutes] = startTime.split(":").map(Number);
-  eventStartDate.setHours(startHours, startMinutes);
-  if (endTime) {
-    const [endHours, endMinutes] = endTime.split(":").map(Number);
-    eventEndDate.setHours(endHours, endMinutes);
-  } else {
-    eventEndDate = new Date(eventStartDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-  }
-
-  const totalDuration = eventEndDate.getTime() - now.getTime();
-  let timeLeft = eventStartDate.getTime() - now.getTime();
-
-  if (timeLeft < 0) {
-    return 100;
-  }
-
-  const percentageLeft = (timeLeft / totalDuration) * 100;
-
-  return percentageLeft;
-};
-
 export const translatedCategories = {
   laboratories: "Laboratorio",
   microtests: "Microtest",

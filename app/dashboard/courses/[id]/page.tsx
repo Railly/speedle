@@ -15,7 +15,6 @@ import { Course, Event, Tasks } from "../../../interfaces";
 import {
   flattenTasks,
   getCourseTitle,
-  getTimeLeftPercentage,
   translatedEventTypes,
 } from "@/lib/utils";
 import { AngleIcon, CalendarIcon, GridIcon } from "@radix-ui/react-icons";
@@ -32,7 +31,7 @@ export default async function Dashboard({
   const sesskey = cookieStore.get("sesskey");
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
-    `https://spee-dle.vercel.app/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
+    `http://localhost:3000/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -40,7 +39,7 @@ export default async function Dashboard({
       return [];
     });
   const tasks: Tasks = await fetch(
-    `https://spee-dle.vercel.app/api/tasks?id=${params?.id}&cookie=${cookie?.value}`
+    `http://localhost:3000/api/tasks?id=${params?.id}&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -49,7 +48,7 @@ export default async function Dashboard({
     });
 
   const events: Event[] = await fetch(
-    `https://spee-dle.vercel.app/api/calendar?cookie=${cookie?.value}`
+    `http://localhost:3000/api/calendar?cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch(() => []);
@@ -132,18 +131,13 @@ export default async function Dashboard({
                     </p>
                   </div>
                 </div>
-                <Progress
-                  value={getTimeLeftPercentage(
-                    event.date,
-                    event.startTime,
-                    event.endTime
-                  )}
-                />
               </CardContent>
               <CardFooter>
                 <a
                   href={event.eventUrl || "#"}
                   className="text-sm font-medium text-sky-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   {event.eventType === "class"
                     ? "Unirse a la clase"

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!cookie) {
-    return redirect("https://spee-dle.vercel.app");
+    return redirect("http://localhost:3000");
   }
 
   try {
@@ -59,6 +59,9 @@ export async function GET(req: NextRequest) {
       return new Response(
         JSON.stringify(
           data[0].data.courses
+            .filter(
+              (course) => course.idnumber !== "0|3434|3434__3434|22721-26844"
+            )
             .map(
               (course) =>
                 ({

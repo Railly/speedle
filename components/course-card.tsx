@@ -25,9 +25,9 @@ export default function CourseCard({
       onClick={() => router.push(`/dashboard/courses/${course.id}`)}
       key={course.id}
       className={cn(
-        "w-full cursor-pointer hover:shadow-lg hover:bg-primary/10 transition-all",
+        "w-full cursor-pointer hover:shadow-lg hover:bg-amber-600/20 transition-all",
         {
-          "border-l-8 border-muted-foreground bg-muted": isSelected,
+          "border-l-8 border-amber-600/60 bg-amber-600/10": isSelected,
         }
       )}
     >
@@ -58,6 +58,8 @@ export default function CourseCard({
           <a
             href={course.viewUrl}
             className="text-sm font-medium text-sky-600 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Ver en Moodle
           </a>

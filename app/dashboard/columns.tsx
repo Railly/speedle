@@ -36,15 +36,15 @@ export const columns: ColumnDef<FlattenTask>[] = [
       const cellValue = info.getValue() as string;
       if (cellValue.includes(":")) {
         if (cellValue.includes("Examen")) {
-          return <>{cellValue.split("Examen")[0].split(":")[1]}</>;
+          return <>{cellValue?.split("Examen")[0]?.split(":")[1]}</>;
         }
         if (cellValue.includes("Tarea")) {
-          return <>{cellValue.split("Tarea")[0].split(":")[1]}</>;
+          return <>{cellValue?.split("Tarea")[0]?.split(":")[1]}</>;
         }
-        return <>{cellValue.split(":")[1]}</>;
+        return <>{cellValue?.split(":")[1]}</>;
       }
       if (cellValue.includes("Examen")) {
-        return <>{cellValue.split("Examen")[0]}</>;
+        return <>{cellValue?.split("Examen")[0]}</>;
       }
       return <>{info.getValue()}</>;
     },
@@ -54,7 +54,7 @@ export const columns: ColumnDef<FlattenTask>[] = [
     header: "Fecha de entrega",
     cell: (info) => {
       const value = info.getValue() as string;
-      const splitValue = value.split(", ");
+      const splitValue = value?.split(", ");
       return (
         <div className="w-[13rem]">{splitValue[1] + ", " + splitValue[2]}</div>
       );
@@ -74,6 +74,8 @@ export const columns: ColumnDef<FlattenTask>[] = [
       return (
         <a
           href={info.getValue() as string}
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-1 font-medium text-sky-600 hover:underline"
         >
           Link

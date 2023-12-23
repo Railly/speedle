@@ -15,7 +15,6 @@ import { Course, Event, Tasks } from "../interfaces";
 import {
   flattenTasks,
   getCourseTitle,
-  getTimeLeftPercentage,
   translatedEventTypes,
 } from "@/lib/utils";
 import { CalendarIcon } from "@radix-ui/react-icons";
@@ -26,7 +25,7 @@ export default async function Dashboard() {
   const sesskey = cookieStore.get("sesskey");
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
-    `https://spee-dle.vercel.app/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
+    `http://localhost:3000/api/courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -35,7 +34,7 @@ export default async function Dashboard() {
     });
   const currentCourse = courses[0];
   const tasks: Tasks = await fetch(
-    `https://spee-dle.vercel.app/api/tasks?id=${currentCourse?.id}&cookie=${cookie?.value}`
+    `http://localhost:3000/api/tasks?id=${currentCourse?.id}&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -44,10 +43,11 @@ export default async function Dashboard() {
     });
 
   const events: Event[] = await fetch(
-    `https://spee-dle.vercel.app/api/calendar?cookie=${cookie?.value}`
+    `http://localhost:3000/api/calendar?cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch(() => []);
+  // const events: Event[] = [];
 
   const flattenedTasks = flattenTasks(tasks);
 
@@ -81,7 +81,7 @@ export default async function Dashboard() {
             <CalendarIcon width={20} height={20} />
             Próximos eventos
           </h3>
-          {events?.map((event) => (
+          {(events || [])?.map((event) => (
             <Card key={event.courseId} className="w-full">
               <CardHeader className="border-b border-border">
                 <CardTitle>{event.courseName}</CardTitle>
@@ -117,17 +117,12 @@ export default async function Dashboard() {
                     </p>
                   </div>
                 </div>
-                <Progress
-                  value={getTimeLeftPercentage(
-                    event.date,
-                    event.startTime,
-                    event.endTime
-                  )}
-                />
               </CardContent>
               <CardFooter>
                 <a
                   href={event.eventUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm font-medium text-sky-600 hover:underline"
                 >
                   {event.eventType === "class"

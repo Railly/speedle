@@ -31,13 +31,13 @@ export async function GET(req: NextRequest) {
 
   const eventElements = document.querySelectorAll("[data-type=event]");
 
-  eventElements.forEach((event) => {
+  eventElements?.forEach((event) => {
     let courseId = event.getAttribute("data-course-id") || "";
     let courseName = event.querySelector(".name")?.textContent || "";
     let dateTimeText = event.querySelector(".col-11")?.textContent || "";
     let date, startTime, endTime;
 
-    let parts = dateTimeText.split(",").map((part) => part.trim());
+    let parts = (dateTimeText?.split(",") || []).map((part) => part.trim());
 
     if (parts.length === 3 && isNaN(Date.parse(parts[0]))) {
       date = parts.slice(0, 2).join(", ");
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
       date = parts[0];
       startTime = parts[1];
       if (startTime.includes("»")) {
-        [startTime, endTime] = startTime.split("»").map((s) => s.trim());
+        [startTime, endTime] = startTime?.split("»").map((s) => s.trim());
       }
     }
     let eventType: Event["eventType"] = "other";
@@ -55,15 +55,16 @@ export async function GET(req: NextRequest) {
     const anchors = event.querySelectorAll(
       ".card a"
     ) as NodeListOf<HTMLAnchorElement>;
-
-    Array.from(anchors).some((anchor) => {
-      if (anchor.textContent?.includes("Clases en directo")) {
-        eventUrl = anchor.href;
-        eventType = "class";
-        return true;
-      }
-      return false;
-    });
+    if (anchors) {
+      Array.from(anchors).some((anchor) => {
+        if (anchor.textContent?.includes("Clases en directo")) {
+          eventUrl = anchor.href;
+          eventType = "class";
+          return true;
+        }
+        return false;
+      });
+    }
 
     if (!eventUrl) {
       Array.from(anchors).some((anchor) => {
@@ -94,11 +95,14 @@ export async function GET(req: NextRequest) {
     }
 
     // Find the element containing the group number by checking the text content
-    Array.from(event.querySelectorAll(".col-11")).forEach((col) => {
-      if (col.textContent?.includes("Grupo")) {
-        group = col.textContent.split("Grupo")[1]?.trim();
-      }
-    });
+    const col11s = event.querySelectorAll(".col-11");
+    if (col11s) {
+      Array.from(col11s).forEach((col) => {
+        if ((col.textContent || "")?.includes("Grupo")) {
+          group = (col.textContent || "")?.split("Grupo")[1]?.trim();
+        }
+      });
+    }
 
     events.push({
       courseId,
