@@ -2,7 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Category, FlattenTask } from "../interfaces";
 import { Badge } from "@/components/ui/badge";
 import { translatedCategories } from "@/lib/utils";
-import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon, OpenInNewWindowIcon } from "@radix-ui/react-icons";
+import { Button } from "@/components/ui/button";
 
 export const columns: ColumnDef<FlattenTask>[] = [
   {
@@ -54,6 +55,7 @@ export const columns: ColumnDef<FlattenTask>[] = [
     header: "Fecha de entrega",
     cell: (info) => {
       const value = info.getValue() as string;
+      if (value === "-") return <div className="w-[13rem]">-</div>;
       const splitValue = value?.split(", ");
       return (
         <div className="w-[13rem]">{splitValue[1] + ", " + splitValue[2]}</div>
@@ -86,7 +88,17 @@ export const columns: ColumnDef<FlattenTask>[] = [
   },
   {
     accessorKey: "isCompleted",
-    header: "Estado",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Estado
+          <CaretSortIcon className="w-4 h-4 ml-2" />
+        </Button>
+      );
+    },
     cell: (info) => {
       return (
         <Badge variant={info.getValue() ? "success" : "destructive"}>

@@ -11,6 +11,8 @@ import {
 import { Progress } from "./ui/progress";
 import { cn, getCourseTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export default function CourseCard({
   course,
@@ -19,15 +21,26 @@ export default function CourseCard({
   course: Course;
   isSelected: boolean;
 }) {
+  const [isLoading, setLoading] = useState(false);
   const router = useRouter();
+
+  const handleClick = () => {
+    setLoading(true);
+    router.push(`/dashboard/courses/${course.id}`, {
+      shallow: true,
+    });
+  };
+
   return (
     <Card
-      onClick={() => router.push(`/dashboard/courses/${course.id}`)}
+      onClick={handleClick}
       key={course.id}
       className={cn(
-        "w-full cursor-pointer hover:shadow-lg hover:bg-amber-600/20 transition-all",
+        "w-full relative cursor-pointer hover:shadow-lg hover:bg-amber-600/20 transition-all",
         {
+          "hover:bg-amber-600/20": !isLoading,
           "border-l-8 border-amber-600/60 bg-amber-600/10": isSelected,
+          "opacity-50 cursor-not-allowed": isLoading,
         }
       )}
     >
@@ -65,6 +78,9 @@ export default function CourseCard({
           </a>
         </div>
       </CardFooter>
+      {isLoading && (
+        <ReloadIcon className="absolute w-4 h-4 mr-2 inset-1/2 animate-spin" />
+      )}
     </Card>
   );
 }

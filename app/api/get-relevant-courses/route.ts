@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!cookie) {
-    return redirect("http://localhost:3000");
+    return redirect("/");
   }
 
   try {

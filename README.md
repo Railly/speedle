@@ -8,6 +8,6 @@ I have made reverse engineering to Moodle's API and I have built a simple dashbo
 
 ### Demo
 
-[http://localhost:3000](http://localhost:3000)
+[https://spee-dle.vercel.app](https://spee-dle.vercel.app)
 
 [![Speedle Screenshot](./public/speedle.png)](http://localhost:3000)
