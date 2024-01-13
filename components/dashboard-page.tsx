@@ -12,6 +12,7 @@ import CourseCard from "@/components/course-card";
 import {
   flattenTasks,
   getCourseTitle,
+  getVercelProtocolURL,
   translatedEventTypes,
 } from "@/lib/utils";
 import { CalendarIcon } from "@radix-ui/react-icons";
@@ -30,7 +31,9 @@ export default async function DashboardPage({
   const sesskey = cookieStore.get("sesskey");
   const cookie = cookieStore.get("cookie");
   const courses: Course[] = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/get-relevant-courses?sesskey=${sesskey?.value}&cookie=${cookie?.value}`
+    `${getVercelProtocolURL()}/api/get-relevant-courses?sesskey=${
+      sesskey?.value
+    }&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -41,7 +44,9 @@ export default async function DashboardPage({
     ? courses?.find((course) => String(course.id) === params.id)
     : courses[0];
   const tasks: Tasks = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/get-all-tasks?id=${currentCourse?.id}&cookie=${cookie?.value}`
+    `${getVercelProtocolURL()}/api/get-all-tasks?id=${
+      currentCourse?.id
+    }&cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch((err) => {
@@ -50,7 +55,7 @@ export default async function DashboardPage({
     });
 
   const events: Event[] = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/get-upcoming-events?cookie=${cookie?.value}`
+    `${getVercelProtocolURL()}/api/get-upcoming-events?cookie=${cookie?.value}`
   )
     .then((res) => res.json())
     .catch(() => []);
