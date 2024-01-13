@@ -2,8 +2,6 @@ import { calculateTimeLeft } from "@/lib/utils";
 import { JSDOM } from "jsdom";
 import type { NextRequest } from "next/server";
 
-export const maxDuration = 300;
-
 interface Task {
   name: string;
   link: string;

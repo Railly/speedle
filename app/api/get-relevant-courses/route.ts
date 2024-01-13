@@ -2,8 +2,6 @@ import { Course, CoursesResponse } from "@/app/interfaces";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
-export const maxDuration = 300;
-
 export async function GET(req: NextRequest) {
   const sesskey = req.nextUrl.searchParams.get("sesskey");
   const cookie = req.nextUrl.searchParams.get("cookie");
