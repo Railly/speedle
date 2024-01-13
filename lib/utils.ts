@@ -89,7 +89,7 @@ export const calculateTimeLeft = (deliveryDateStr: string): string => {
 };
 
 export const getVercelProtocolURL = () => {
-  const domain = process.env.VERCEL_URL;
+  const domain = process.env.NEXT_PUBLIC_VERCEL_URL;
   const environment = process.env.NEXT_PUBLIC_VERCEL_ENV;
 
   if (environment === "production") {
